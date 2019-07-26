@@ -7,6 +7,10 @@
                  [ring "1.7.1"]
                  [compojure "1.6.1"]]
 
+  :min-lein-version "2.0.0"
+
+  :uberjar-name "webdev.jar"
+
   :main webdev.core
 
   :profiles {:dev
