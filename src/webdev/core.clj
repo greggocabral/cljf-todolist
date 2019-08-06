@@ -1,6 +1,7 @@
 (ns webdev.core
   (:require [webdev.item.model :as items]
-            [webdev.item.handler :as items-handler])
+            [webdev.item.handler :as items-handler]
+            [webdev.web-utils :as wu])
   (:require [ring.adapter.jetty :as jetty]
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.middleware.params :refer [wrap-params]]
@@ -8,59 +9,42 @@
             [ring.middleware.file-info :refer [wrap-file-info]]
             [compojure.core :refer [defroutes ANY GET GET POST PUT DELETE]]
             [compojure.route :refer [not-found]]
-            [ring.handler.dump :refer [handle-dump]]))
+            [ring.handler.dump :refer [handle-dump]]
+            [hiccup.core :refer [html h]]
+            [hiccup.page :refer [html5]]))
 
 (def db (or (System/getenv "DATABASE_URL")
             "jdbc:postgresql://localhost/webdev01"))
 
-(defn greet [req]
- {:status 200 :body "Hello, Grego!" :headers {}})
+(defn index-page [req]
+  (let [body  [:div.container
+               [:div.row
+                [:div.col-sm-8
+                 [:h1 "Welcome"]
+                 [:p
+                  [:a {:href "/items"}
+                   "See tasks"]]]]]
+        page (wu/base-page "Tasks - Home" body)]
+    {:status 200 :body page :headers {}}))
 
-(defn about [req]
- {:status 200 :body "I'm Gregorio Cabral and I created this app.\nFollow me on twitter @greggocabral" :headers {}})
-
-(defn goodbye [req]
- {:status 200 :body "Goodbye, cruel world" :headers {}})
-
-(defn request [req]
- {:status 200 :body (str req) :headers {}})
-
-(defn yo [req]
- {:status 200
-  :body (format "Yo! %s!" (get-in req [:route-params :name]))
-  :headers {}})
-
-(def ops
-  {"+" +
-   "-" -
-   ":" /
-   "*" *})
-
-(defn calc [req]
-  (let [{:keys [num1 num2 op]} (get req :route-params)
-        f (get ops op)]
-    (if f
-      {:status 200
-       :body (str (f (Integer. num1) (Integer. num2)))
-       :headers {}}
-      {:status 404
-       :body "Operand not found"
-       :headers {}})))
+(defn resource-not-found-page [req]
+ (let [body [:div.container
+             [:div.row
+              [:div.col-sm-8
+               [:h1 "Resource not found"]
+               [:a {:href "/"}
+                "Go home"]]]]]
+   (wu/base-page "Tasks - Not found" body)))
 
 (defroutes routes
-  (GET "/" [] greet)
-  (GET "/about" [] about)
-  (GET "/goodbye" [] goodbye)
-  (ANY "/request" [] handle-dump)
-  (GET "/yo/:name" [] yo)
-  (GET "/calc/:num1/:op/:num2" [] calc)
+  (GET "/" [] index-page)
 
   (GET "/items" [] items-handler/handle-index-items)
   (POST "/items" [] items-handler/handle-create-item!)
   (PUT "/items/:item-id" [] items-handler/handle-update-item!)
   (DELETE "/items/:item-id" [] items-handler/handle-delete-item!)
 
-  (not-found "Page not found"))
+  (not-found resource-not-found-page))
 
 
 (defn wrap-db [handler]

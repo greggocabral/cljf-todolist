@@ -1,14 +1,7 @@
-# webdev
+## Todo List App
 
-A Clojure library designed to ... well, that part is up to you.
-
-## Usage
-
-FIXME
-
-## License
-
-Copyright © 2019 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+- developed in clojure
+- server-side rendered
+- connects to a Postgres DB
+- demo deployed to heroku at [daily-tasks-checker.herokuapp.com](http://daily-tasks-checker.herokuapp.com)
+- follows the guidelines by Eric Normand in [PurelyFunctional.tv](https://purelyfunctional.tv/)

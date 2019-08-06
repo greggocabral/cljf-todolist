@@ -14,8 +14,21 @@
          checked BOOLEAN NOT NULL DEFAULT FALSE,
          date_created TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now())"]))
 
+(defn read-items [db]
+  (db/query
+    db
+    ["SELECT id, name, description, checked, date_created
+      FROM items
+      ORDER BY date_created"]))
+
 (defn create-item! [db name description]
-  (-> (db/insert! db "items" {:name name :description description})
+  (-> (db/query
+        db
+        ["INSERT INTO items (name, description)
+          VALUES (?, ?)
+          RETURNING id"
+         name
+         description])
       first
       :id))
 
@@ -36,10 +49,3 @@
        ["DELETE FROM items
          WHERE id = ?"
         id])))
-
-(defn read-items [db]
-  (db/query
-    db
-    ["SELECT id, name, description, checked, date_created
-      FROM items
-      ORDER BY date_created"]))
