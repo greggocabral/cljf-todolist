@@ -81,7 +81,10 @@
   (jetty/run-jetty app
                    {:port (Integer. port)}))
 
-(defn -dev-main [port]
-  (items/create-table! db)
-  (jetty/run-jetty (wrap-reload (var app))
-                   {:port (Integer. port)}))
+(defn -dev-main
+  ([] (-dev-main 3005))
+  ([port]
+   (items/create-table! db)
+   (println "running server on port" port)
+   (jetty/run-jetty (wrap-reload (var app))
+                    {:port (Integer. port)})))

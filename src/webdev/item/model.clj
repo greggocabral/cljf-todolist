@@ -1,6 +1,11 @@
 (ns webdev.item.model
   (:require [clojure.java.jdbc :as db]))
 
+(defn delete-table! [db]
+  (db/execute!
+    db
+    ["drop table items"]))
+
 (defn create-table! [db]
   (db/execute!
     db

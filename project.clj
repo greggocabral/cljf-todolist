@@ -17,4 +17,4 @@
   :main webdev.core
 
   :profiles {:dev
-             {:main webdev.core/-dev-main}})
+             {:main webdev.core}})
